@@ -1,0 +1,51 @@
+import graphviz
+
+# EPC folyamatábra létrehozása
+epc = graphviz.Digraph('EPC_TantargyTeljesites', format='png')
+epc.attr(rankdir='LR', size='8,5')
+
+# Szereplők színei (legendához)
+colors = {
+    'H': 'lightblue',      # Hallgató
+    'EO': 'lightgreen',    # Elméleti oktató
+    'GO': 'lightyellow',   # Gyakorlati oktató
+    'EO, GO': 'lightpink',
+    'EO, GO, H': 'white'
+}
+
+# Tevékenységek listája
+activities = [
+    (1, "Tantárgy tematika kiadása", "EO"),
+    (2, "Órarend közzététele", "EO"),
+    (3, "Kurzusfelvétel", "H"),
+    (4, "Oktatási anyagok feltöltése", "EO, GO"),
+    (5, "Elméleti órák látogatása", "H"),
+    (6, "Gyakorlati órák látogatása", "H"),
+    (7, "Beadandók kiírása", "GO"),
+    (8, "Beadandók elkészítése", "H"),
+    (9, "Beadandók leadása", "H"),
+    (10, "Beadandók értékelése", "GO"),
+    (11, "Elméleti ZH kiírása", "EO"),
+    (12, "Elméleti ZH megírása", "H"),
+    (13, "ZH értékelése", "EO"),
+    (14, "Konzultációs lehetőség biztosítása", "EO, GO"),
+    (15, "Hallgatói konzultáció", "H"),
+    (16, "Pótlási lehetőség biztosítása", "EO"),
+    (17, "Pótlás teljesítése", "H"),
+    (18, "Összesített értékelés készítése", "EO, GO"),
+    (19, "Jegyek rögzítése", "EO"),
+    (20, "Tantárgy lezárása", "EO")
+]
+
+# Tevékenységek csomópontként hozzáadása
+for idx, label, responsible in activities:
+    node_id = f"A{idx}"
+    color = colors.get(responsible, "white")
+    epc.node(node_id, f"{idx}. {label}\n({responsible})", style='filled', fillcolor=color)
+
+# Összekötés lineárisan
+for i in range(1, len(activities)):
+    epc.edge(f"A{i}", f"A{i+1}")
+
+# Fájl renderelése
+epc.render('EPC_TantargyTeljesites', view=True)
